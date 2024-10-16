@@ -1,10 +1,38 @@
 const express = require("express");
+const users = require('./MOCK_DATA.json');
+
 const app = express();
 const port = 3000;
 
-app.get('/', (request, response) => {
-    response.send("Welcome to your server!");
-});
+//routes
+
+
+//Server side rendering
+app.get('/users', (req, res) =>{
+    const html = `
+    <ul>
+     ${users.map(user => `<li>${user.first_name}</li>`).join("")}
+    </ul>
+    `
+    res.send(html);
+})
+
+//Rest API
+
+//Client side rendering
+app.get('/api/users', (req, res) =>{
+    return res.json(users);
+})
+
+app.get('/api/users/:id', (req, res) => {
+    const id = Number(req.params.id);
+    const user = users.find((user) => user.id === id);
+    return res.json(user);
+})
+
+
+
+
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}`);
