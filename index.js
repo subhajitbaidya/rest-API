@@ -17,6 +17,7 @@ app.get('/users', (req, res) => {
     res.send(html);
 })
 
+
 //Rest API
 
 //Client side rendering
@@ -37,10 +38,8 @@ app.route('/api/users/:id')
 
 app.post('/api/users', (req, res) => {
     //TODO create new user
-    return res.json({'status' : 'pending'});
+    return res.json({ 'status': 'pending' });
 })
-
-
 
 
 
