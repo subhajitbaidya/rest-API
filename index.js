@@ -42,7 +42,7 @@ app.route('/api/users/:id')
     });
 
 app.post('/api/users', (req, res) => {
-    const  body = req.body;
+    const body = req.body;
     users.push({...body, id: users.length + 1});
     fs.writeFile('./MOCK_DATA.Json', JSON.stringify(users), (err, data) => {
         res.json({ status: 'success', id: users.length });
