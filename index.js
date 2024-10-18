@@ -1,8 +1,13 @@
 const express = require("express");
 const users = require('./MOCK_DATA.json');
+const fs = require('fs');
+const { error } = require("console");
 
 const app = express();
 const port = 3000;
+
+//Middleware
+app.use(express.urlencoded({extended: false}));
 
 //routes
 
@@ -37,9 +42,12 @@ app.route('/api/users/:id')
     });
 
 app.post('/api/users', (req, res) => {
-    //TODO create new user
-    return res.json({ 'status': 'pending' });
-})
+    const  body = req.body;
+    users.push({...body, id: users.length + 1});
+    fs.writeFile('./MOCK_DATA.Json', JSON.stringify(users), (err, data) => {
+        res.json({ status: 'success', id: users.length });
+    }); 
+});
 
 
 
