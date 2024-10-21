@@ -1,7 +1,7 @@
 const express = require("express");
 const users = require('./MOCK_DATA.json');
 const fs = require('fs');
-const { error } = require("console");
+
 
 const app = express();
 const port = 3000;
@@ -10,7 +10,6 @@ const port = 3000;
 app.use(express.urlencoded({extended: false}));
 
 //routes
-
 
 //Server side rendering
 app.get('/users', (req, res) => {
@@ -36,14 +35,46 @@ app.route('/api/users/:id')
         const user = users.find((user) => user.id === id);
         return res.json(user);
     }).patch((req, res) => {
-        return res.json({ 'status': 'pending' });
+        const userId = Number(req.params.id);  
+        const updatedData = req.body;            
+        const user = users.find(user => user.id === userId);
+      
+        if (!user) {
+          return res.status(404).send({ message: 'User not found' });
+        }
+       
+        Object.keys(updatedData).forEach(key => {
+          if (user.hasOwnProperty(key)) {        
+            user[key] = updatedData[key];        
+          }
+        });
+        
+        res.status(200).send({ message: 'User updated successfully', user });      
     }).delete((req, res) => {
-        return res.json({ 'status': 'pending' });
+        const userId = Number(req.params.id);
+        if (isNaN(userId)) {
+            return res.status(400).json({ status: 'fail', message: 'Invalid user ID' });
+        }
+        const userIndex = users.findIndex(user => user.id === userId); 
+        if (userIndex === -1) {
+            return res.status(404).json({ status: 'fail', message: 'User not found' });
+        }
+        users.splice(userIndex, 1);
+        res.json({ status: 'success', message: 'User deleted successfully' });
+
     });
 
 app.post('/api/users', (req, res) => {
-    const body = req.body;
-    users.push({...body, id: users.length + 1});
+    const { first_name, last_name, email, gender, 'Job Title': jobTitle } = req.body;
+    const newUser = {
+        id: users.length + 1,
+        first_name,
+        last_name,
+        email,
+        gender,
+        'Job Title': jobTitle
+    };
+    users.push(newUser);
     fs.writeFile('./MOCK_DATA.Json', JSON.stringify(users), (err, data) => {
         res.json({ status: 'success', id: users.length });
     }); 
@@ -55,3 +86,4 @@ app.post('/api/users', (req, res) => {
 app.listen(port, () => {
     console.log(`Server started on port ${port}`);
 });
+
