@@ -10,11 +10,12 @@ connectMongoDb("mongodb://127.0.0.1:27017/rest-API").then(() =>
   console.log("MongoDb connected!")
 );
 
-//Middleware
+//Middleware-plugin
 app.use(express.urlencoded({ extended: false }));
 app.use(logReqRes("log.txt"));
 
-app.use("/user", userRouter);
+// Routes
+app.use("/api/user", userRouter);
 
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
