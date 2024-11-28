@@ -13,8 +13,28 @@ async function handleGetUserById(req, res) {
 }
 
 async function handleUpdateUserById(req, res) {
-  await User.findByIdAndUpdate(req.params.id, { lastName: "Changed" });
-  res.status(200).json({ message: "User updated successfully" });
+  try {
+    const { id } = req.params; // Extract the user ID from the request parameters.
+    const { firstName, lastName, email, jobTitle, gender } = req.body; // Extract fields from the request body.
+
+    // Update the user with the provided fields dynamically.
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { firstName, lastName, email, jobTitle, gender },
+      { new: true, runValidators: true } // Options to return the updated document and validate.
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" }); // Handle user not found.
+    }
+
+    res.status(200).json({ message: "User updated successfully", updatedUser }); // Respond with success.
+  } catch (error) {
+    console.error(error); // Log any error.
+    res
+      .status(500)
+      .json({ message: "Error updating user", error: error.message }); // Handle errors.
+  }
 }
 
 async function handleDeleteUserById(req, res) {
